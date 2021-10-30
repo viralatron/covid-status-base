@@ -1,21 +1,51 @@
-// const axios = require("axios");
-
-async function getSummary() {
+async function getCountries() {
   try {
-    const data = await getData(`summary`);
+    const data = await axios.get(`https://api.covid19api.com/countries`);
+    return data;
+  } catch (err) {
+    console.log(err);
+  }
+}
+function getCountryAllStatus(country, from, to) {
+  try {
+    const data = axios.get(`https://api.covid19api.com/country/${country}`);
     return data;
   } catch (err) {
     console.log(err);
   }
 }
 
-async function getData(url) {
-  try {
-    const res = await axios.get(`https://api.covid19api.com/${url}`);
-    return res;
-  } catch (err) {
-    console.log(err);
-  }
+document
+  .getElementById("cmbCountry")
+  .addEventListener("DOMContentLoaded", SetCountries());
+
+document.getElementById("filtro").addEventListener("click", SetCountryData);
+
+async function SetCountries() {
+  const select = document.getElementById("cmbCountry");
+  const countries = await getCountries();
+
+  _.forEach(countries.data, (d) => {
+    const option = document.createElement("option");
+    option.value = d.Slug;
+    option.innerText = d.Country;
+    select.appendChild(option);
+  });
+}
+
+async function SetCountryData() {
+  const dateStart = document.getElementById("date_start");
+  const dateEnd = document.getElementById("date_end");
+  const country = document.getElementById("cmbCountry");
+  const dataType = document.getElementById("cmbData");
+  console.log(
+    getCountryAllStatus(
+      country.value,
+      dateStart.value,
+      dateEnd.value,
+      dataType.value
+    )
+  );
 }
 
 async function GetDashboard() {
